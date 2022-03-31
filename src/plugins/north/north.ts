@@ -1,0 +1,56 @@
+import {App} from 'vue';
+import {AxiosResponse} from "axios";
+
+
+const install = function install(app: App) {
+
+    app.config.globalProperties.$download = function (url: string, method: string, fileName: string, data: any) {
+        app.config.globalProperties.$axios({
+            method: method,
+            url: url,
+            data: Object.assign(data),
+            responseType: 'blob',
+        }).then((res: AxiosResponse) => {
+            const blob = new Blob([res.data])
+            const objectUrl = window.URL.createObjectURL(blob)//创建新的URL表示指定Blob对象
+            const a = document.createElement('a')//创建a标签
+            a.href = objectUrl//指定下载链接
+            a.download = fileName//指定下载文件名
+            a.click()//触发下载
+            a.remove()//除a标签
+            window.URL.revokeObjectURL(objectUrl)//释放
+        });
+
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    Date.prototype.Format = function (fmt: string) {
+        const o = {
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (const k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                { // @ts-ignore
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+        return fmt;
+    }
+};
+
+
+const _default = {
+    version: 1,
+    install: install
+};
+
+export default _default;
