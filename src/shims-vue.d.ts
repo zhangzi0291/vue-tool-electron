@@ -1,5 +1,6 @@
 import {App} from 'vue'
 import {AxiosStatic} from "axios";
+import {IpcRenderer} from "electron";
 
 // typings.d.ts
 declare module '*.json' {
@@ -33,6 +34,7 @@ declare global {
         BASE_WS_URL: string;
         websocket: WebSocket;
         isDev: boolean;
+        ipcRenderer:IpcRenderer;
     }
 
     interface Date {
