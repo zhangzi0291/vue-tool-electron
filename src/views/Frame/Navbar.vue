@@ -1,34 +1,25 @@
 <style lang="less" scoped>
-@title-bar-height: 30px;
+
 
 .title-bar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
   user-select: none;
-  position: fixed;
-  top: 0px;
+  position: relative;
   width: 100%;
-  height: @title-bar-height;
+  color: var(--text-color);
+  height: var(--title-bar-height);
   background-color: var(--title-color);
   z-index: 1000;
-  -webkit-app-region: no-drag;
-}
-
-.title-bar-drag-area {
   -webkit-app-region: drag;
-  display: flex;
-  align-items: center;
-  width: 99%;
-  height: 90%;
 }
 
-.title-container  {
+
+.title-container {
   margin-left: 3px;
+  height: var(--title-bar-height);
   display: flex;
-  flex-direction: row;
+  justify-content: center;
   align-items: center;
-  position: fixed;
+  position: absolute;
   z-index: 2000;
   top: 0px;
   left: 0px;
@@ -37,9 +28,9 @@
 .title {
   margin-left: 5px;
   user-select: text;
-  color: var(--text-color);
   font-size: 18px;
   font-family: "Maven Pro", sans-serif;
+
   &:hover {
     cursor: text;
     color: white;
@@ -48,25 +39,24 @@
 
 .title-bar-buttons {
   -webkit-app-region: no-drag;
+  height: var(--title-bar-height);
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: row;
-  position: fixed;
+  position: absolute;
   z-index: 2000;
   top: 0px;
-  right: 0px;
+  right: 130px;
 }
 
 .title-bar-button {
   -webkit-app-region: no-drag;
-  margin-top: 3px;
   margin-right: 12px;
+
   &:hover {
     cursor: pointer;
   }
-}
-
-.play-title-button {
-  margin-right: 8px;
 }
 
 @keyframes rotation {
@@ -87,18 +77,15 @@
 }
 </style>
 <template>
-  <section class="title-bar">
-    <div class="title-bar-drag-area">
-      <div class="title-container">
-        <img class="app-icon" height="22" width="22" :src="'./logo.png'"/>
-        <p><span class="title">Music Player v{{version}}</span></p>
-      </div>
-      <div class="title-bar-buttons">
-        <minus-outlined class="title-bar-button"/>
-        <close-outlined class="title-bar-button"/>
-      </div>
+  <div class="title-bar">
+    <div class="title-container">
+      <img class="app-icon" height="22" width="22" :src="'./logo.png'"/>
+      <span class="title">Music Player v{{ version }}</span>
     </div>
-  </section>
+    <div class="title-bar-buttons">
+      <question-outlined class="title-bar-button"/>
+    </div>
+  </div>
 </template>
 <script lang="ts">
 
@@ -108,10 +95,9 @@ export default defineComponent({
   name: 'Navbar',
   data() {
     return {
-      version:"0.0.1"
+      version: "0.1.0"
     }
   },
-  methods: {
-  },
+  methods: {},
 })
 </script>

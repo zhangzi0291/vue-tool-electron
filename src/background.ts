@@ -8,7 +8,7 @@ import * as path from "path";
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const windonWidth = 1280
-const windonHeight = 880
+const windonHeight = 720
 
 let win: any = null
 let loading: any = null
@@ -47,7 +47,12 @@ async function createWindow() {
     win = new BrowserWindow({
         width: windonWidth,
         height: windonHeight,
-        frame: false,
+        // frame: false,
+        titleBarStyle: 'hidden',
+        titleBarOverlay: {
+            color: '#2f3241',
+            symbolColor: '#74b1be'
+        },
         show: true,
         //icon:nativeImage.createFromPath(path.join(__dirname, "../public/preview.png")),
         webPreferences: {
@@ -80,31 +85,6 @@ async function createWindow() {
 
 }
 
-async function loadingWindow() {
-    loading = new BrowserWindow({
-        width: windonWidth,
-        height: windonHeight,
-        frame: false,
-        backgroundColor: '#222',
-        skipTaskbar: true,
-        transparent: true,
-        resizable: false,
-        webPreferences: {experimentalFeatures: true}
-    })
-    const loadingURL = process.env.NODE_ENV !== 'production' ? `${process.env.WEBPACK_DEV_SERVER_URL}/loader.html` : `app://./loader.html`
-
-    loading.loadURL(loadingURL)
-
-    loading.show()
-
-    setTimeout(() => {
-        createWindow().then(() => {
-            loading.close()
-        })
-    }, 7 * 1000)
-
-}
-
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
@@ -132,8 +112,7 @@ app.on('ready', async () => {
     //     console.error('Vue Devtools failed to install:', e.toString())
     //   }
     // }
-    // createWindow()
-    loadingWindow()
+    createWindow()
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 })
