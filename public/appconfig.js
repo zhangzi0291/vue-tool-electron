@@ -2,7 +2,7 @@
 var BASE_URL = null //"http://47.96.23.168:38081/north-api/"
 var BASE_WS_URL = null
 var SSO_URL = null //"http://47.96.23.168:38081/north-api/"
-var htmlTitle = "学习中心"
+var htmlTitle = "VUE工具箱"
 
 window.title = htmlTitle
 document.getElementsByTagName("title")[0].innerText = htmlTitle;

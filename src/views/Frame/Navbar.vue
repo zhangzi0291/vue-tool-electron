@@ -2,16 +2,30 @@
 
 
 .title-bar {
+  -webkit-app-region: drag;
   user-select: none;
   position: relative;
   width: 100%;
   color: var(--text-color);
   height: var(--title-bar-height);
   background-color: var(--title-color);
-  z-index: 1000;
-  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+
 }
 
+.title-logo{
+  -webkit-app-region: no-drag;
+  width: 22px;
+  height: 22px;
+  margin-left: 5px;
+  margin-right: 10px;
+}
+
+.title-menu{
+  -webkit-app-region: no-drag;
+
+}
 
 .title-container {
   margin-left: 3px;
@@ -19,10 +33,32 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  z-index: 2000;
-  top: 0px;
-  left: 0px;
+  flex: 1;
+}
+
+.title-bar-buttons {
+  -webkit-app-region: no-drag;
+  height: var(--title-bar-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  .title-bar-button {
+    -webkit-app-region: no-drag;
+    height: 100%;
+    line-height: var(--title-bar-height);
+    padding: 0 15px;
+    &:hover {
+      cursor: pointer;
+      background-color: #4f4f4f;
+    }
+  }
+  .close-button {
+    &:hover {
+      color: #fff;
+      background-color: #ff4d4f;
+    }
+  }
 }
 
 .title {
@@ -37,27 +73,9 @@
   }
 }
 
-.title-bar-buttons {
-  -webkit-app-region: no-drag;
-  height: var(--title-bar-height);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  position: absolute;
-  z-index: 2000;
-  top: 0px;
-  right: 130px;
-}
 
-.title-bar-button {
-  -webkit-app-region: no-drag;
-  margin-right: 12px;
 
-  &:hover {
-    cursor: pointer;
-  }
-}
+
 
 @keyframes rotation {
   from {
@@ -78,12 +96,18 @@
 </style>
 <template>
   <div class="title-bar">
+    <img class="title-logo" :src="'./favicon.ico'"/>
+    <div class="title-menu">
+      <question-outlined class="title-bar-button"/>
+      <question-outlined class="title-bar-button"/>
+
+    </div>
     <div class="title-container">
-      <img class="app-icon" height="22" width="22" :src="'./logo.png'"/>
-      <span class="title">Music Player v{{ version }}</span>
+      <span class="title">{{ title }} v{{ version }}</span>
     </div>
     <div class="title-bar-buttons">
-      <question-outlined class="title-bar-button"/>
+      <minus-outlined class="title-bar-button" @click="miniWindow"/>
+      <close-outlined class="title-bar-button close-button" @click="closeWindow"/>
     </div>
   </div>
 </template>
@@ -95,9 +119,19 @@ export default defineComponent({
   name: 'Navbar',
   data() {
     return {
+      title: window.title,
       version: "0.1.0"
     }
   },
-  methods: {},
+  methods: {
+    closeWindow(){
+      console.log("closewindow")
+      window.ipcRenderer.send('close-window');
+    },
+    miniWindow(){
+      console.log("miniwindow")
+      window.ipcRenderer.send('minimizing-window');
+    }
+  },
 })
 </script>

@@ -1,29 +1,22 @@
 'use strict'
 
-import {app, protocol, BrowserWindow, nativeImage, Menu, shell, ipcMain} from 'electron'
+import {app, protocol, BrowserWindow, nativeImage, Menu, shell, Tray} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
 import * as path from "path";
+import IPC from "./ipc";
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const windonWidth = 1280
 const windonHeight = 720
 
 let win: any = null
-let loading: any = null
+let tray:any = null
+
 const template = [
     {
-        label: '菜单1',
-        submenu: [{
-            label: '帮助文档',
-            click: function () {
-                shell.openExternal('https://www.jianshu.com/u/1699a0673cfe')
-            }
-        }]
-    },
-    {
-        label: '菜单2',
+        label: '菜单',
         submenu: [{
             label: '最小化',
             accelerator: 'CmdOrCtrl+M',
@@ -47,12 +40,12 @@ async function createWindow() {
     win = new BrowserWindow({
         width: windonWidth,
         height: windonHeight,
-        // frame: false,
-        titleBarStyle: 'hidden',
-        titleBarOverlay: {
-            color: '#2f3241',
-            symbolColor: '#74b1be'
-        },
+        frame: false,
+        // titleBarStyle: 'hidden',
+        // titleBarOverlay: {
+        //     color: '#2f3241',
+        //     symbolColor: '#74b1be'
+        // },
         show: true,
         //icon:nativeImage.createFromPath(path.join(__dirname, "../public/preview.png")),
         webPreferences: {
@@ -66,14 +59,14 @@ async function createWindow() {
             preload: path.join(__dirname, 'preload.js')
         }
     })
-    console.log(process.env.ELECTRON_NODE_INTEGRATION)
+    createProtocol('app')
+    console.log(process.env.WEBPACK_DEV_SERVER_URL)
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
         if (!process.env.IS_TEST) win.webContents.openDevTools()
         win.webContents.openDevTools();
     } else {
-        createProtocol('app')
         // Load the index.html when not in development
         win.loadURL('app://./index.html')
     }
@@ -83,12 +76,52 @@ async function createWindow() {
         win.show()
     })
 
+    win.on('closed', () => {
+        console.log("onclosed")
+        win = null;
+    });
+
+    win.on('close', (event) => {
+        // 截获 close 默认行为
+        event.preventDefault();
+        // 点击关闭时触发close事件，我们按照之前的思路在关闭时，隐藏窗口，隐藏任务栏窗口
+        win.hide();
+        win.setSkipTaskbar(true);
+    });
+
+    // 新建托盘
+    if (process.env.WEBPACK_DEV_SERVER_URL) {
+        tray = new Tray(path.join(__dirname, '../public/logo.ico'));
+    }else{
+        tray = new Tray(path.join(__dirname, './logo.ico'));
+    }
+    // 托盘名称
+    tray.setToolTip("VUE工具箱");
+    // 托盘菜单
+    const contextMenu = Menu.buildFromTemplate([{
+        label: '显示',
+        click: () => { win.show() }
+    },
+        {
+            label: '退出',
+            click: () => { win.destroy() }
+        }
+    ]);
+    // // 载入托盘菜单
+    tray.setContextMenu(contextMenu);
+    // 双击触发
+    tray.on('double-click', () => {
+        // 双击通知区图标实现应用的显示或隐藏
+        win.isVisible() ? win.hide() : win.show()
+        win.isVisible() ? win.setSkipTaskbar(false) : win.setSkipTaskbar(true);
+    });
 }
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
+    console.log("closed")
     if (process.platform !== 'darwin') {
         app.quit()
     }
@@ -113,6 +146,8 @@ app.on('ready', async () => {
     //   }
     // }
     createWindow()
+
+    IPC.initIPC(win)
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 })
@@ -131,4 +166,6 @@ if (isDevelopment) {
         })
     }
 }
+
+
 
