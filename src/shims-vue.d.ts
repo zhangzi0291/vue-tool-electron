@@ -1,6 +1,8 @@
 import {App} from 'vue'
-import {AxiosStatic} from "axios";
+import axios,{AxiosStatic} from "axios";
 import {IpcRenderer} from "electron";
+import {API} from "@/plugins/axios";
+import {Store} from "vuex";
 
 // typings.d.ts
 declare module '*.json' {
@@ -22,6 +24,8 @@ declare module "@vue/runtime-core" {
         $notification: any,
         $axios: AxiosStatic,
         $download: any,
+        $api:API,
+        $store:Store
     }
 }
 
@@ -35,6 +39,7 @@ declare global {
         websocket: WebSocket;
         isDev: boolean;
         ipcRenderer:IpcRenderer;
+        axios:axios;
     }
 
     interface Date {

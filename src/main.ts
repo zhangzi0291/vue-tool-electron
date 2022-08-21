@@ -3,6 +3,7 @@ import {createApp} from 'vue'
 import App from '@/App.vue'
 
 import router from './router'
+import store from './store'
 
 import Antd from '@/plugins/antd';
 import axios from '@/plugins/axios';
@@ -15,11 +16,10 @@ import 'md-editor-v3/lib/style.css';
 const app = createApp(App)
 
 
-window.vm = app
-
 app.component("md-editor", MdEditor)
 
 app.use(router)
+    .use(store)
     .use(Antd)
     .use(axios)
     .use(north)

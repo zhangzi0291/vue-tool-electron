@@ -1,8 +1,14 @@
 import axios from "axios";
 import {App} from "vue";
+import SysLoginApi from "@/api/SysLoginApi";
 
 declare let BASE_URL: any;
 declare let SSO_URL: any;
+
+export interface API {
+    SysLoginApi: SysLoginApi;
+
+}
 
 const install = function install(app: App) {
 
@@ -111,8 +117,11 @@ const install = function install(app: App) {
         return Promise.reject(error);
     });
 
+    const api = {
+        SysLoginApi:new SysLoginApi(axios)
+    } as API
+    app.config.globalProperties.$api = api;
     app.config.globalProperties.$axios = axios;
-
 
     app.provide('$axios', axios)
 };

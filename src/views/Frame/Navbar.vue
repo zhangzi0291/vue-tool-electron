@@ -14,7 +14,7 @@
 
 }
 
-.title-logo{
+.title-logo {
   -webkit-app-region: no-drag;
   width: 22px;
   height: 22px;
@@ -22,7 +22,7 @@
   margin-right: 10px;
 }
 
-.title-menu{
+.title-menu {
   -webkit-app-region: no-drag;
 
 }
@@ -43,16 +43,19 @@
   justify-content: center;
   align-items: center;
   flex-direction: row;
+
   .title-bar-button {
     -webkit-app-region: no-drag;
     height: 100%;
     line-height: var(--title-bar-height);
     padding: 0 15px;
+
     &:hover {
       cursor: pointer;
       background-color: #4f4f4f;
     }
   }
+
   .close-button {
     &:hover {
       color: #fff;
@@ -72,10 +75,6 @@
     color: white;
   }
 }
-
-
-
-
 
 @keyframes rotation {
   from {
@@ -98,25 +97,39 @@
   <div class="title-bar">
     <img class="title-logo" :src="'./favicon.ico'"/>
     <div class="title-menu">
-      <question-outlined class="title-bar-button"/>
-      <question-outlined class="title-bar-button"/>
+      <!--      <question-outlined class="title-bar-button"/>-->
+      <!--      <question-outlined class="title-bar-button"/>-->
 
     </div>
     <div class="title-container">
       <span class="title">{{ title }} v{{ version }}</span>
     </div>
     <div class="title-bar-buttons">
-      <minus-outlined class="title-bar-button" @click="miniWindow"/>
-      <close-outlined class="title-bar-button close-button" @click="closeWindow"/>
+      <div>
+        <login></login>
+      </div>
+      <div>
+        <minus-outlined class="title-bar-button" @click="miniWindow"/>
+      </div>
+      <div>
+        <close-outlined class="title-bar-button close-button" @click="closeWindow"/>
+      </div>
     </div>
+    <close-window ref="cw" :close-callable="closeCallable"></close-window>
   </div>
 </template>
 <script lang="ts">
 
 import {defineComponent} from "vue";
+import Login from "@/views/Frame/Login.vue";
+import CloseWindow from "@/views/Frame/CloseWindow.vue";
 
 export default defineComponent({
   name: 'Navbar',
+  components: {
+    CloseWindow,
+    Login
+  },
   data() {
     return {
       title: window.title,
@@ -124,12 +137,23 @@ export default defineComponent({
     }
   },
   methods: {
-    closeWindow(){
-      console.log("closewindow")
-      window.ipcRenderer.send('close-window');
+    closeWindow() {
+      if (!this.$store.state.closeProperties.rembermer) {
+        const cw: any = this.$refs.cw
+        cw.open()
+      } else {
+        this.closeCallable()
+      }
+      // window.ipcRenderer.send('close-window');
     },
-    miniWindow(){
-      console.log("miniwindow")
+    closeCallable() {
+      if (this.$store.state.closeProperties.closeType == 'exit') {
+        window.ipcRenderer.send('close-window');
+      } else {
+        window.ipcRenderer.send('close-on-desktop');
+      }
+    },
+    miniWindow() {
       window.ipcRenderer.send('minimizing-window');
     }
   },

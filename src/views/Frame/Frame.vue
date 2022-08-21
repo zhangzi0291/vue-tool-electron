@@ -15,6 +15,7 @@
   overflow-y: auto;
   position: relative;
 }
+
 </style>
 <template>
   <div :style="['width: 100%','height: 100%',appStyle]">

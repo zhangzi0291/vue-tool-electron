@@ -3,6 +3,7 @@ import {AxiosResponse} from "axios";
 
 
 const install = function install(app: App) {
+    window.vm = app
 
     app.config.globalProperties.$download = function (url: string, method: string, fileName: string, data: any) {
         app.config.globalProperties.$axios({

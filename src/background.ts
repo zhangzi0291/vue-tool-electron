@@ -1,9 +1,7 @@
 'use strict'
 
-import {app, protocol, BrowserWindow, nativeImage, Menu, shell, Tray} from 'electron'
+import {app, BrowserWindow, Menu, protocol, Tray} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
-
-import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
 import * as path from "path";
 import IPC from "./ipc";
 
@@ -11,8 +9,8 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 const windonWidth = 1280
 const windonHeight = 720
 
-let win: any = null
-let tray:any = null
+let win: BrowserWindow
+let tray: Tray
 
 const template = [
     {
@@ -59,7 +57,6 @@ async function createWindow() {
             preload: path.join(__dirname, 'preload.js')
         }
     })
-    createProtocol('app')
     console.log(process.env.WEBPACK_DEV_SERVER_URL)
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
@@ -68,6 +65,7 @@ async function createWindow() {
         win.webContents.openDevTools();
     } else {
         // Load the index.html when not in development
+        createProtocol('app')
         win.loadURL('app://./index.html')
     }
 
@@ -78,10 +76,10 @@ async function createWindow() {
 
     win.on('closed', () => {
         console.log("onclosed")
-        win = null;
+        // win.close();
     });
 
-    win.on('close', (event) => {
+    win.on('close', (event:any) => {
         // 截获 close 默认行为
         event.preventDefault();
         // 点击关闭时触发close事件，我们按照之前的思路在关闭时，隐藏窗口，隐藏任务栏窗口
@@ -98,14 +96,9 @@ async function createWindow() {
     // 托盘名称
     tray.setToolTip("VUE工具箱");
     // 托盘菜单
-    const contextMenu = Menu.buildFromTemplate([{
-        label: '显示',
-        click: () => { win.show() }
-    },
-        {
-            label: '退出',
-            click: () => { win.destroy() }
-        }
+    const contextMenu = Menu.buildFromTemplate([
+        {label: '显示', click: () => win.show()},
+        {label: '退出', click: () => { win.destroy() }}
     ]);
     // // 载入托盘菜单
     tray.setContextMenu(contextMenu);
@@ -133,6 +126,21 @@ app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
+//限制只能开启一个应用(4.0以上版本)
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+ app.quit()
+} else {
+ app.on('second-instance', (event, commandLine, workingDirectory) => {
+   // 当运行第二个实例时,将会聚焦到mainWindow这个窗口
+   if (win) {
+     if (win.isMinimized()) win.restore()
+     win.focus()
+     win.show()
+   }
+ })
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -148,6 +156,8 @@ app.on('ready', async () => {
     createWindow()
 
     IPC.initIPC(win)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 })

@@ -4,6 +4,7 @@ import Frame from '@/views/Frame/Frame.vue'
 import AppHome from '@/views/AppHome/AppHome.vue'
 import JsonFormat from '@/views/Tool/JsonFormat.vue'
 import Base64Tool from '@/views/Tool/Base64Tool.vue'
+import Notebook from '@/views/Tool/notebook/Notebook.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -24,9 +25,17 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/Base64Tool',
                 name: 'Base64Tool',
                 component: Base64Tool
+            },{
+                path: '/Notebook',
+                name: 'Notebook',
+                component: Notebook
             },
         ],
     },
+    {
+        path: '/:pathMatch(.*)',
+        redirect: '/home',
+    }
 
 ]
 

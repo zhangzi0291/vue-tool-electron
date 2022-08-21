@@ -23,7 +23,7 @@
 </style>
 <template>
   <div class="app-flow" style="padding: 30px">
-    <a-card class="app-box" hoverable v-for="item in app" :key="item.title">
+    <a-card class="app-box" hoverable v-for="item in apps" :key="item.title">
       <div @click="openApp(item.url)">
         <img class="app-image" v-if="item.img"
              alt="example"
@@ -48,6 +48,21 @@
 <!--        </a-tooltip>-->
 <!--      </template>-->
     </a-card>
+    <a-card class="app-box" hoverable v-for="item in this.$store.state.apps" :key="item.title">
+      <div @click="openApp(item.appUrl)">
+        <img class="app-image" v-if="item.img"
+             alt="example"
+             :src="item.img"
+        />
+        <img class="app-image" v-else
+             alt="example"
+             :src="'./APP应用.png'"
+        />
+        <div class="app-title">
+          {{ item.appName }}
+        </div>
+      </div>
+    </a-card>
   </div>
 </template>
 <script lang="ts">
@@ -58,11 +73,11 @@ export default defineComponent({
   name: 'AppHome',
   data() {
     return {
-      app: [
+      apps: [
         {url: "/JsonFormat", title: "JSON格式化"},
         {url: "/Base64Tool", title: "BASE64工具"},
-
-      ]
+        {url: "/Notebook", title: "笔记本"},
+      ],
     }
   },
   methods: {

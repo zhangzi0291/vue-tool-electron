@@ -10,7 +10,9 @@ html, body {
 .top {
   height: 100%;
 }
-
+.ant-message{
+  top: 50px!important;
+}
 </style>
 <template>
   <div class="top">
